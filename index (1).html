@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warehouse Daily Tasks</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;min-height:100vh;padding:16px}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#ffffff;border:2px solid #d0d0d0;border-radius:10px;padding:18px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:600;letter-spacing:0.07em;color:#666;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0e0e0}
+.login-wrap{max-width:360px;margin:80px auto}
+.login-logo{font-size:22px;font-weight:700;color:#1a1a2e;margin-bottom:4px}
+.login-sub{font-size:13px;color:#888;margin-bottom:18px}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.topbar-title{font-size:20px;font-weight:700;color:#111}
+.topbar-sub{font-size:12px;color:#888;margin-top:3px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:1.5px solid #ccc;border-radius:7px;background:#fff;color:#333;font-size:13px;cursor:pointer;font-family:inherit}
+.btn:hover{background:#f5f5f5}
+.btn-primary{background:#1a1a2e;color:#fff;border-color:#1a1a2e}
+.btn-primary:hover{background:#111}
+.btn-danger{background:#c0392b;color:#fff;border-color:#c0392b}
+.btn-danger:hover{background:#a93226}
+.btn-sm{padding:5px 10px;font-size:12px}
+.badges-card{background:#ffffff;border:2px solid #d0d0d0;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:2px solid transparent;display:inline-flex;align-items:center;gap:5px}
+.badge.asap{background:#fde8e8;color:#9b2226;border-color:#e74c3c}
+.badge.today{background:#fef3e2;color:#7d4e00;border-color:#e67e22}
+.badge.thisweek{background:#e8f0fe;color:#1a4fa0;border-color:#3498db}
+.badge.done{background:#e8f8e8;color:#1a5c1a;border-color:#27ae60}
+.badge.inactive{opacity:0.35}
+.add-card{background:#f8f8f8;border:2px solid #d0d0d0;border-radius:10px;padding:16px;margin-bottom:14px}
+.add-card-title{font-size:11px;font-weight:600;letter-spacing:0.07em;color:#666;text-transform:uppercase;margin-bottom:12px}
+.field-label{font-size:11px;font-weight:600;color:#555;margin-bottom:4px;display:block}
+.field-input{width:100%;padding:8px 10px;border:1.5px solid #ccc;border-radius:6px;background:#fff;color:#222;font-size:13px;font-family:inherit}
+.field-input:focus{outline:none;border-color:#3498db}
+.add-row1{display:grid;grid-template-columns:1fr 2fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.add-row2{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:flex-end}
+.err{color:#c0392b;font-size:12px;margin-top:6px}
+.table-card{background:#ffffff;border:2px solid #d0d0d0;border-radius:10px;overflow:hidden;margin-bottom:14px}
+.table-header{background:#f4f4f4;border-bottom:2px solid #d0d0d0;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.table-header-title{font-size:11px;font-weight:600;letter-spacing:0.07em;color:#666;text-transform:uppercase}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+th{padding:8px 10px;text-align:left;font-size:11px;font-weight:600;color:#666;background:#fafafa;border-bottom:1.5px solid #e0e0e0;text-transform:uppercase;letter-spacing:0.04em}
+td{padding:9px 10px;border-bottom:1px solid #eee;color:#222;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+tr.done-row td{opacity:0.5}
+.urg{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;border:1.5px solid transparent}
+.urg.asap{background:#fde8e8;color:#9b2226;border-color:#e74c3c}
+.urg.today{background:#fef3e2;color:#7d4e00;border-color:#e67e22}
+.urg.thisweek{background:#e8f0fe;color:#1a4fa0;border-color:#3498db}
+.urg.done{background:#e8f8e8;color:#1a5c1a;border-color:#27ae60}
+.check-done{width:16px;height:16px;cursor:pointer;accent-color:#27ae60}
+.inline-in{width:100%;border:1px solid #ddd;border-radius:4px;padding:4px 7px;font-size:12px;background:#fff;color:#222;font-family:inherit}
+.inline-in:focus{outline:none;border-color:#3498db}
+.empty{text-align:center;padding:32px;color:#999;font-size:13px}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.admin-box{background:#f8f8f8;border:2px solid #d0d0d0;border-radius:10px;padding:16px}
+.admin-box h3{font-size:13px;font-weight:600;color:#333;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0e0e0}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:999}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:10px;border:2px solid #ccc;padding:24px;max-width:320px;width:90%}
+.modal h2{font-size:15px;font-weight:600;margin-bottom:8px}
+.modal p{font-size:13px;color:#666;margin-bottom:16px}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;display:none;z-index:9999}
+.toast.show{display:block}
+@media(max-width:600px){
+  .add-row1{grid-template-columns:1fr 1fr}
+  .add-row2{grid-template-columns:1fr}
+  .admin-grid{grid-template-columns:1fr}
+}
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff;padding:0}
+  .add-card,.badges-card{display:none!important}
+  .card,.table-card{border:1px solid #ccc;margin-bottom:8px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="screen active">
+  <div class="login-wrap">
+    <div class="card">
+      <div class="login-logo">Warehouse Daily Tasks</div>
+      <div class="login-sub">Enter your password to continue</div>
+      <div style="margin-bottom:10px">
+        <label class="field-label">Password</label>
+        <input type="password" class="field-input" id="loginPwd" placeholder="Enter your password" />
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="btn btn-primary" style="flex:1" onclick="doLogin()"><i class="ti ti-lock"></i> Staff login</button>
+        <button class="btn" onclick="doAdminLogin()"><i class="ti ti-settings"></i> Admin</button>
+      </div>
+      <p id="loginErr" class="err"></p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="mainScreen" class="screen">
+  <div class="card no-print">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Warehouse Daily Tasks</div>
+        <div class="topbar-sub">Colour-coded by urgency — saves automatically</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-sm" onclick="exportPDF()"><i class="ti ti-file"></i> Export PDF</button>
+        <button class="btn btn-sm" id="adminBtn" style="display:none" onclick="showScreen('adminScreen')"><i class="ti ti-settings"></i> Admin</button>
+        <button class="btn btn-sm" onclick="doLogout()"><i class="ti ti-logout"></i> Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="badges-card no-print">
+    <span class="badge asap" id="badgeASAP" onclick="toggleFilter('ASAP')"><i class="ti ti-alert-circle"></i> ASAP <strong id="cntASAP">0</strong></span>
+    <span class="badge today" id="badgeTODAY" onclick="toggleFilter('TODAY')"><i class="ti ti-clock"></i> Today <strong id="cntTODAY">0</strong></span>
+    <span class="badge thisweek" id="badgeTHISWEEK" onclick="toggleFilter('THISWEEK')"><i class="ti ti-calendar"></i> This week <strong id="cntTHISWEEK">0</strong></span>
+    <span class="badge done" id="badgeDONE" onclick="toggleFilter('DONE')"><i class="ti ti-check"></i> Completed <strong id="cntDONE">0</strong></span>
+  </div>
+
+  <div class="add-card no-print" id="addCard">
+    <div class="add-card-title">Add new task</div>
+    <div class="add-row1">
+      <div><label class="field-label">Name</label><input type="text" class="field-input" id="aName" placeholder="Team member" /></div>
+      <div><label class="field-label">Task</label><input type="text" class="field-input" id="aTask" placeholder="Describe the task" /></div>
+      <div><label class="field-label">Due</label><input type="text" class="field-input" id="aDue" placeholder="e.g. FRIDAY" /></div>
+      <div><label class="field-label">Urgency</label>
+        <select class="field-input" id="aUrg">
+          <option value="ASAP">🔴 ASAP</option>
+          <option value="TODAY">🟠 Today</option>
+          <option value="THISWEEK" selected>🔵 This week</option>
+        </select>
+      </div>
+    </div>
+    <div class="add-row2">
+      <div><label class="field-label">Notes (optional)</label><input type="text" class="field-input" id="aNotes" placeholder="Any extra notes" /></div>
+      <button class="btn btn-primary" onclick="addTask()"><i class="ti ti-plus"></i> Add task</button>
+    </div>
+    <p id="addErr" class="err"></p>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header no-print">
+      <span class="table-header-title">Task list</span>
+      <span id="taskCount" style="font-size:12px;color:#888"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px" class="no-print"></th>
+            <th style="width:65px">Date</th>
+            <th style="width:90px">Name</th>
+            <th>Task</th>
+            <th style="width:75px">Due</th>
+            <th style="width:98px">Urgency</th>
+            <th style="width:82px">Completed</th>
+            <th style="width:108px">Sign off</th>
+            <th>Notes</th>
+            <th style="width:34px" class="no-print"></th>
+          </tr>
+        </thead>
+        <tbody id="taskBody"></tbody>
+      </table>
+    </div>
+    <p id="emptyMsg" class="empty" style="display:none"><i class="ti ti-clipboard-list" style="font-size:24px;display:block;margin-bottom:8px"></i>No tasks yet — add one above</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen" class="screen">
+  <div class="card">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Admin Settings</div>
+        <div class="topbar-sub">Manage passwords and tasks</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-sm" onclick="showScreen('mainScreen')"><i class="ti ti-arrow-left"></i> Back to tasks</button>
+        <button class="btn btn-sm" onclick="doLogout()"><i class="ti ti-logout"></i> Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-grid">
+    <div class="admin-box">
+      <h3><i class="ti ti-lock" style="font-size:14px;margin-right:5px"></i>Change Passwords</h3>
+      <div style="margin-bottom:8px"><label class="field-label">New staff password</label><input type="password" class="field-input" id="newStaffPwd" placeholder="Leave blank to keep current" /></div>
+      <div style="margin-bottom:8px"><label class="field-label">New admin password</label><input type="password" class="field-input" id="newAdminPwd" placeholder="Leave blank to keep current" /></div>
+      <div style="margin-bottom:12px"><label class="field-label">Confirm admin password</label><input type="password" class="field-input" id="confAdminPwd" placeholder="Confirm new admin password" /></div>
+      <button class="btn btn-primary btn-sm" onclick="savePwds()"><i class="ti ti-check"></i> Save passwords</button>
+      <p id="pwdMsg" style="margin-top:8px;font-size:12px"></p>
+    </div>
+    <div class="admin-box">
+      <h3><i class="ti ti-trash" style="font-size:14px;margin-right:5px"></i>Manage Tasks</h3>
+      <p style="font-size:12px;color:#666;margin-bottom:12px;line-height:1.6">As admin you can delete any task using the trash icon next to each row. Use the button below to bulk-remove all completed tasks at once.</p>
+      <button class="btn btn-danger btn-sm" onclick="clearDone()"><i class="ti ti-trash"></i> Clear all completed tasks</button>
+      <p id="clearMsg" style="margin-top:8px;font-size:12px;color:#27ae60"></p>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">Confirm delete</h2>
+    <p id="modalBody">Are you sure? This cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-sm btn-danger" id="modalOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var S={tasks:[],staffPwd:'warehouse2026',adminPwd:'admin2026',isAdmin:false};
+var activeFilter=null;
+function sv(){try{localStorage.setItem('wh_tasks',JSON.stringify({tasks:S.tasks,staffPwd:S.staffPwd,adminPwd:S.adminPwd}))}catch(e){}}
+function ld(){try{var d=localStorage.getItem('wh_tasks');if(d){var p=JSON.parse(d);S.tasks=p.tasks||[];S.staffPwd=p.staffPwd||S.staffPwd;S.adminPwd=p.adminPwd||S.adminPwd;}}catch(e){}}
+ld();
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active');}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500);}
+function doLogin(){var p=document.getElementById('loginPwd').value;if(p===S.adminPwd){S.isAdmin=true;afterLogin();}else if(p===S.staffPwd){S.isAdmin=false;afterLogin();}else{document.getElementById('loginErr').textContent='Incorrect password. Try again.';}}
+function doAdminLogin(){var p=document.getElementById('loginPwd').value;if(p===S.adminPwd){S.isAdmin=true;afterLogin();}else{document.getElementById('loginErr').textContent='Incorrect admin password.';}}
+function afterLogin(){document.getElementById('loginErr').textContent='';document.getElementById('loginPwd').value='';document.getElementById('adminBtn').style.display=S.isAdmin?'':'none';showScreen('mainScreen');renderTasks();}
+function doLogout(){S.isAdmin=false;showScreen('loginScreen');}
+document.getElementById('loginPwd').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+function addTask(){
+  var n=document.getElementById('aName').value.trim();
+  var t=document.getElementById('aTask').value.trim();
+  var d=document.getElementById('aDue').value.trim();
+  var u=document.getElementById('aUrg').value;
+  var nt=document.getElementById('aNotes').value.trim();
+  if(!n||!t){document.getElementById('addErr').textContent='Name and task are required.';return;}
+  document.getElementById('addErr').textContent='';
+  var now=new Date();
+  var ds=now.getDate()+'.'+(now.getMonth()+1)+'.'+String(now.getFullYear()).slice(-2);
+  S.tasks.push({id:Date.now(),date:ds,name:n,task:t,due:d,urgency:u,completed:false,signoff:'',notes:nt});
+  sv();toast('Task added');
+  ['aName','aTask','aDue','aNotes'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('aUrg').value='THISWEEK';
+  renderTasks();
+}
+function toggleFilter(f){activeFilter=(activeFilter===f)?null:f;renderTasks();}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function urgClass(u){return u==='ASAP'?'asap':u==='TODAY'?'today':'thisweek';}
+function urgLabel(u){return u==='ASAP'?'ASAP':u==='TODAY'?'Today':'This week';}
+function renderTasks(){
+  var body=document.getElementById('taskBody');body.innerHTML='';
+  var counts={ASAP:0,TODAY:0,THISWEEK:0,DONE:0};
+  S.tasks.forEach(function(t){if(t.completed)counts.DONE++;else counts[t.urgency]=(counts[t.urgency]||0)+1;});
+  document.getElementById('cntASAP').textContent=counts.ASAP;
+  document.getElementById('cntTODAY').textContent=counts.TODAY;
+  document.getElementById('cntTHISWEEK').textContent=counts.THISWEEK;
+  document.getElementById('cntDONE').textContent=counts.DONE;
+  ['ASAP','TODAY','THISWEEK','DONE'].forEach(function(f){
+    var el=document.getElementById('badge'+f);
+    var base=f==='ASAP'?'asap':f==='TODAY'?'today':f==='THISWEEK'?'thisweek':'done';
+    el.className='badge '+base+(activeFilter&&activeFilter!==f?' inactive':'');
+  });
+  var visible=S.tasks.filter(function(t){
+    if(activeFilter==='DONE')return t.completed;
+    if(activeFilter)return !t.completed&&t.urgency===activeFilter;
+    return true;
+  });
+  document.getElementById('taskCount').textContent=visible.length+' task'+(visible.length===1?'':'s');
+  document.getElementById('emptyMsg').style.display=visible.length?'none':'block';
+  visible.forEach(function(t){
+    var tr=document.createElement('tr');
+    if(t.completed)tr.className='done-row';
+    var uc=t.completed?'done':urgClass(t.urgency);
+    var ul=t.completed?'Completed':urgLabel(t.urgency);
+    var del=S.isAdmin?'<td class="no-print"><button class="btn btn-sm btn-danger" onclick="confirmDelete('+t.id+')" title="Delete"><i class="ti ti-trash"></i></button></td>':'<td class="no-print"></td>';
+    tr.innerHTML='<td class="no-print"><input type="checkbox" class="check-done" '+(t.completed?'checked':'')+' onchange="toggleDone('+t.id+',this.checked)" /></td>'
+      +'<td style="font-size:12px;color:#888">'+esc(t.date)+'</td>'
+      +'<td style="font-weight:600">'+esc(t.name)+'</td>'
+      +'<td>'+esc(t.task)+'</td>'
+      +'<td style="font-size:12px">'+esc(t.due)+'</td>'
+      +'<td><span class="urg '+uc+'">'+ul+'</span></td>'
+      +'<td style="text-align:center">'+(t.completed?'<span style="color:#27ae60;font-weight:600;font-size:12px">&#10003; Done</span>':'<span style="color:#bbb">—</span>')+'</td>'
+      +'<td><input class="inline-in" value="'+esc(t.signoff)+'" placeholder="—" onchange="updateField('+t.id+',\'signoff\',this.value)" /></td>'
+      +'<td><input class="inline-in" value="'+esc(t.notes)+'" placeholder="—" onchange="updateField('+t.id+',\'notes\',this.value)" /></td>'
+      +del;
+    body.appendChild(tr);
+  });
+}
+function toggleDone(id,val){var t=S.tasks.find(function(x){return x.id===id;});if(t){t.completed=val;sv();renderTasks();toast(val?'Marked complete':'Marked incomplete');}}
+function updateField(id,field,val){var t=S.tasks.find(function(x){return x.id===id;});if(t){t[field]=val;sv();}}
+function confirmDelete(id){
+  document.getElementById('modalOk').onclick=function(){S.tasks=S.tasks.filter(function(t){return t.id!==id;});sv();renderTasks();closeModal();toast('Task deleted');};
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function savePwds(){
+  var sp=document.getElementById('newStaffPwd').value;
+  var ap=document.getElementById('newAdminPwd').value;
+  var cp=document.getElementById('confAdminPwd').value;
+  var msg=document.getElementById('pwdMsg');
+  if(!sp&&!ap){msg.style.color='#c0392b';msg.textContent='Enter at least one password to update.';return;}
+  if(ap&&ap!==cp){msg.style.color='#c0392b';msg.textContent='Admin passwords do not match.';return;}
+  if(ap&&ap.length<6){msg.style.color='#c0392b';msg.textContent='Minimum 6 characters required.';return;}
+  if(sp)S.staffPwd=sp;if(ap)S.adminPwd=ap;sv();
+  msg.style.color='#27ae60';msg.textContent='Passwords saved successfully.';
+  ['newStaffPwd','newAdminPwd','confAdminPwd'].forEach(function(id){document.getElementById(id).value='';});
+}
+function clearDone(){
+  var n=S.tasks.filter(function(t){return t.completed;}).length;
+  S.tasks=S.tasks.filter(function(t){return !t.completed;});sv();renderTasks();
+  document.getElementById('clearMsg').textContent=n+' completed task'+(n===1?'':' s')+' cleared.';
+  setTimeout(function(){document.getElementById('clearMsg').textContent='';},3000);
+}
+function exportPDF(){window.print();}
+renderTasks();
+</script>
+</body>
+</html>
